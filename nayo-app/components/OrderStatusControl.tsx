@@ -22,7 +22,7 @@ export default function OrderStatusControl({
         value={selectedStatus}
         aria-label={`حالة الطلب ${id.slice(-6)}`}
         disabled={isPending}
-        className={`max-w-36 rounded-full border border-stone-200 px-3 py-2 text-xs font-bold outline-none focus:border-[#b48a3e] disabled:cursor-wait disabled:opacity-70 ${orderStatusColors[selectedStatus] ?? "bg-white text-[#141414]"}`}
+        className={`max-w-36 rounded-full border border-stone-200 dark:border-stone-700 px-3 py-2 text-xs font-bold outline-none focus:border-[#b48a3e] disabled:cursor-wait disabled:opacity-70 ${orderStatusColors[selectedStatus] ?? "bg-white dark:bg-stone-900 text-[#141414] dark:text-stone-100"}`}
         onChange={(event) => {
           const nextStatus = event.currentTarget.value;
           setSelectedStatus(nextStatus);

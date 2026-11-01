@@ -77,10 +77,10 @@ export const orderStatuses: Record<string, string> = {
 };
 
 export const orderStatusColors: Record<string, string> = {
-  pending: "bg-orange-100 text-orange-800",
-  confirmed: "bg-yellow-100 text-yellow-800",
-  shipped: "bg-blue-100 text-blue-800",
-  delivered: "bg-emerald-100 text-emerald-800",
-  cancelled: "bg-red-100 text-red-800",
-  draft: "bg-stone-100 text-stone-700",
+  pending: "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300",
+  confirmed: "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300",
+  shipped: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
+  delivered: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+  cancelled: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
+  draft: "bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-200",
 };

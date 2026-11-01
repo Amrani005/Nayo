@@ -11,7 +11,7 @@ export default async function AdminPanelLayout({
   await requireOwner();
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f8fafc] font-['Tajawal',sans-serif] text-[#141414]">
+    <div dir="rtl" className="min-h-screen bg-[#f8fafc] dark:bg-neutral-950 font-['Tajawal',sans-serif] text-[#141414] dark:text-stone-100">
       <SideBarNav />
       {children}
     </div>

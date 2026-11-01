@@ -9,7 +9,7 @@ export default async function EditProductPage({
   params: Promise<{ id: string }>;
 }) {
   return (
-    <Suspense fallback={<p className="mx-auto max-w-[90rem] px-4 py-16 text-sm font-medium text-stone-500">جارٍ تحميل المنتج...</p>}>
+    <Suspense fallback={<p className="mx-auto max-w-[90rem] px-4 py-16 text-sm font-medium text-stone-500 dark:text-stone-400">جارٍ تحميل المنتج...</p>}>
       <EditProduct params={params} />
     </Suspense>
   );

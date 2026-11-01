@@ -26,7 +26,7 @@ export default function HeroSlider() {
 
   return (
     
-      <div id="hero" className="relative font-tajawal mx-auto h-[600px] md:h-[680px] w-full overflow-hidden  bg-[#141414]
+      <div id="hero" className="relative font-tajawal mx-auto h-[600px] md:h-[680px] w-full overflow-hidden  bg-[#141414] dark:bg-neutral-800
        text-white shadow-2xl ">
         
         
@@ -91,7 +91,7 @@ export default function HeroSlider() {
                   }`}
                 >
                   {isActive && (
-                    <span className="absolute -top-[17px] left-0 right-0 h-[2.5px] bg-white transition-all duration-500" />
+                    <span className="absolute -top-[17px] left-0 right-0 h-[2.5px] bg-white dark:bg-stone-900 transition-all duration-500" />
                   )}
 
                   <span className="block text-xs font-bold tracking-wider text-white sm:text-sm">

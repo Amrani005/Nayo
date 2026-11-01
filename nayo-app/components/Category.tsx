@@ -44,9 +44,9 @@ export default function Category({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full bg-white text-black py-16 md:py-24 px-4 md:px-8 border-t border-neutral-200">
+    <section className="w-full bg-white dark:bg-stone-900 text-black dark:text-neutral-100 py-16 md:py-24 px-4 md:px-8 border-t border-neutral-200 dark:border-neutral-700">
       <div className="max-w-[100rem] mx-auto">
-        <div className="flex items-end justify-between border-b border-neutral-200 pb-8 mb-10">
+        <div className="flex items-end justify-between border-b border-neutral-200 dark:border-neutral-700 pb-8 mb-10">
           <h2 className="text-3xl md:text-5xl font-medium tracking-tighter uppercase">
             قد يعجبك أيضاً
           </h2>
@@ -55,7 +55,7 @@ export default function Category({
               type="button"
               onClick={() => scroll(-1)}
               aria-label="المنتجات السابقة"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 transition-colors hover:bg-neutral-100"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-600 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
@@ -63,7 +63,7 @@ export default function Category({
               type="button"
               onClick={() => scroll(1)}
               aria-label="المنتجات التالية"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 transition-colors hover:bg-neutral-100"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-600 transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -96,7 +96,7 @@ export default function Category({
               className="snap-start flex-shrink-0 w-[calc(100%/2.5)] md:w-[calc((100%-6rem)/4)]"
             >
               <Link href={`/products/${product.id}`} className="group flex flex-col cursor-pointer">
-                <div className="relative w-full aspect-[3/4] bg-[#f4f4f5] overflow-hidden mb-4 rounded-sm">
+                <div className="relative w-full aspect-[3/4] bg-[#f4f4f5] dark:bg-neutral-800 overflow-hidden mb-4 rounded-sm">
                   <motion.img
                     src={product.imageUrl}
                     alt={product.name}
@@ -108,10 +108,10 @@ export default function Category({
                   />
                 </div>
                 <div className="flex justify-between items-baseline gap-3">
-                  <h3 className="text-sm font-bold tracking-wide uppercase text-neutral-900 line-clamp-2 group-hover:text-neutral-500 transition-colors">
+                  <h3 className="text-sm font-bold tracking-wide uppercase text-neutral-900 dark:text-neutral-100 line-clamp-2 group-hover:text-neutral-500 dark:group-hover:text-neutral-400 transition-colors">
                     {product.name}
                   </h3>
-                  <span className="text-sm font-mono font-medium text-black whitespace-nowrap">
+                  <span className="text-sm font-mono font-medium text-black dark:text-neutral-100 whitespace-nowrap">
                     DA{product.price}
                   </span>
                 </div>
@@ -121,7 +121,7 @@ export default function Category({
         </div>
         <div className="mt-8 flex flex-col items-center gap-3">
           {hasError && (
-            <p role="alert" className="text-sm text-red-700">
+            <p role="alert" className="text-sm text-red-700 dark:text-red-300">
               تعذّر تحميل المزيد من المنتجات. يرجى المحاولة مرة أخرى.
             </p>
           )}
@@ -130,7 +130,7 @@ export default function Category({
               type="button"
               onClick={() => void onLoadMore()}
               disabled={isLoadingMore}
-              className="rounded-full border border-neutral-300 px-6 py-3 text-sm font-medium transition-colors hover:bg-neutral-100 disabled:cursor-wait disabled:opacity-60"
+              className="rounded-full border border-neutral-300 dark:border-neutral-600 px-6 py-3 text-sm font-medium transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:cursor-wait disabled:opacity-60"
             >
               {isLoadingMore
                 ? "جارٍ تحميل المزيد..."

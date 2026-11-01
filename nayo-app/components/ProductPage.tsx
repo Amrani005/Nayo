@@ -161,15 +161,15 @@ const ProductPage = () => {
   return (
     <div
       dir="rtl"
-      className="w-full min-h-screen mb-20 bg-white text-[#141414]
-       selection:bg-[#141414] selection:text-white pt-8 lg:pt-14
+      className="w-full min-h-screen mb-20 bg-white dark:bg-stone-900 text-[#141414] dark:text-stone-100
+       selection:bg-[#141414] dark:selection:bg-white selection:text-white dark:selection:text-neutral-900 pt-8 lg:pt-14
        "
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
           <div className="w-full lg:w-1/2">
             <div className="sticky top-28 flex flex-col w-full gap-4">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[28px] bg-stone-100 border border-stone-200/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[28px] bg-stone-100 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 {product.imageUrl ? (
                   <motion.img
                     key={selectedImage}
@@ -181,13 +181,13 @@ const ProductPage = () => {
                     className="h-full w-full object-cover object-top"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-sm text-stone-400 font-medium">
+                  <div className="w-full h-full flex items-center justify-center text-sm text-stone-400 dark:text-stone-400 font-medium">
                     جاري تحميل الصورة...
                   </div>
                 )}
 
                 {product.category && (
-                  <span className="absolute top-4 right-4 rounded-full bg-white/90 px-4 py-1.5 text-xs font-semibold text-[#141414] backdrop-blur-md shadow-sm">
+                  <span className="absolute top-4 right-4 rounded-full bg-white/90 dark:bg-stone-800/90 px-4 py-1.5 text-xs font-semibold text-[#141414] dark:text-stone-100 backdrop-blur-md shadow-sm">
                     {product.category}
                   </span>
                 )}
@@ -202,7 +202,7 @@ const ProductPage = () => {
                       onClick={() => setSelectedImage(img)}
                       className={`relative aspect-[3/4] overflow-hidden rounded-[18px] transition-all duration-200 ${
                         selectedImage === img
-                          ? "ring-2 ring-[#141414] ring-offset-2 opacity-100"
+                          ? "ring-2 ring-[#141414] dark:ring-stone-300 ring-offset-2 dark:ring-offset-stone-950 opacity-100"
                           : "opacity-60 hover:opacity-100"
                       }`}
                     >
@@ -222,25 +222,25 @@ const ProductPage = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border-b border-stone-200/80 pb-7"
+              className="border-b border-stone-200/80 dark:border-stone-700/80 pb-7"
             >
-              <div className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#b48a3e]">
+              <div className="mb-3 inline-flex items-center gap-1.5 text-xs font-semibold text-[#b48a3e] dark:text-[#d4ad65]">
                 <Sparkles className="h-4 w-4" />
                 <span>{product.category}</span>
               </div>
 
-              <h1 className="font-serif text-2xl sm:text-4xl font-bold text-[#141414] leading-snug mb-5">
+              <h1 className="font-serif text-2xl sm:text-4xl font-bold text-[#141414] dark:text-stone-100 leading-snug mb-5">
                 {product.name}
               </h1>
 
               <div className="flex items-baseline gap-3">
-                <p className="text-2xl sm:text-3xl font-extrabold text-[#141414]">
+                <p className="text-2xl sm:text-3xl font-extrabold text-[#141414] dark:text-stone-100">
                   {Number(product.price).toLocaleString("ar-DZ")}
-                  <span className="text-base font-semibold text-stone-500 mr-1.5">
+                  <span className="text-base font-semibold text-stone-500 dark:text-stone-400 mr-1.5">
                     د.ج
                   </span>
                 </p>
-                <span className="text-xs text-stone-400 font-medium">
+                <span className="text-xs text-stone-400 dark:text-stone-400 font-medium">
                   شامل جميع الرسوم
                 </span>
               </div>
@@ -250,11 +250,11 @@ const ProductPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="py-7 border-b border-stone-200/80"
+              className="py-7 border-b border-stone-200/80 dark:border-stone-700/80"
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-sm font-bold text-[#141414]">اختاري المقاس</h2>
-                <span className="text-xs font-medium text-stone-500">
+                <h2 className="text-sm font-bold text-[#141414] dark:text-stone-100">اختاري المقاس</h2>
+                <span className="text-xs font-medium text-stone-500 dark:text-stone-400">
                   مقاسات قياسية مريحة
                 </span>
               </div>
@@ -268,15 +268,15 @@ const ProductPage = () => {
                       onClick={() => setSelectedSize(item)}
                       className={`min-w-[3.5rem] px-5 py-3 rounded-full text-sm font-semibold transition-all duration-200 ${
                         selectedSize === item
-                          ? "bg-[#141414] text-white shadow-md scale-105"
-                          : "bg-stone-100 text-stone-700 hover:bg-stone-200/80 hover:text-[#141414]"
+                          ? "bg-[#141414] dark:bg-neutral-800 text-white shadow-md scale-105"
+                          : "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-200 hover:bg-stone-200/80 dark:hover:bg-stone-700/80 hover:text-[#141414] dark:hover:text-stone-100"
                       }`}
                     >
                       {item}
                     </button>
                   ))
                 ) : (
-                  <div className="w-full py-4 rounded-2xl text-xs text-stone-400 text-center bg-stone-50">
+                  <div className="w-full py-4 rounded-2xl text-xs text-stone-400 dark:text-stone-400 text-center bg-stone-50 dark:bg-stone-900">
                     المقاسات غير متوفرة حالياً
                   </div>
                 )}
@@ -315,21 +315,21 @@ const ProductPage = () => {
               transition={{ delay: 0.3 }}
               className="mt-2"
             >
-              <div className="flex gap-8 border-b border-stone-200/80">
+              <div className="flex gap-8 border-b border-stone-200/80 dark:border-stone-700/80">
                 <button
                   type="button"
                   onClick={() => setActiveTab("description")}
                   className={`pb-3.5 text-sm font-bold transition-colors relative ${
                     activeTab === "description"
-                      ? "text-[#141414]"
-                      : "text-stone-400 hover:text-[#141414]"
+                      ? "text-[#141414] dark:text-stone-100"
+                      : "text-stone-400 dark:text-stone-400 hover:text-[#141414] dark:hover:text-stone-100"
                   }`}
                 >
                   وصف القطعة
                   {activeTab === "description" && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#141414]"
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#141414] dark:bg-neutral-800"
                     />
                   )}
                 </button>
@@ -338,15 +338,15 @@ const ProductPage = () => {
                   onClick={() => setActiveTab("details")}
                   className={`pb-3.5 text-sm font-bold transition-colors relative ${
                     activeTab === "details"
-                      ? "text-[#141414]"
-                      : "text-stone-400 hover:text-[#141414]"
+                      ? "text-[#141414] dark:text-stone-100"
+                      : "text-stone-400 dark:text-stone-400 hover:text-[#141414] dark:hover:text-stone-100"
                   }`}
                 >
                   تفاصيل العناية والمميزات
                   {activeTab === "details" && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#141414]"
+                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#141414] dark:bg-neutral-800"
                     />
                   )}
                 </button>
@@ -360,7 +360,7 @@ const ProductPage = () => {
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -5 }}
-                      className="text-sm leading-relaxed text-stone-600"
+                      className="text-sm leading-relaxed text-stone-600 dark:text-stone-300"
                     >
                       {product.description}
                     </motion.p>
@@ -370,18 +370,18 @@ const ProductPage = () => {
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -5 }}
-                      className="text-sm leading-relaxed text-stone-600 flex flex-col gap-2.5"
+                      className="text-sm leading-relaxed text-stone-600 dark:text-stone-300 flex flex-col gap-2.5"
                     >
                       <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-[#b48a3e]" />
+                        <Check className="h-4 w-4 text-[#b48a3e] dark:text-[#d4ad65]" />
                         <span>قماش عالي الجودة بقصة انسيابية مريحة</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-[#b48a3e]" />
+                        <Check className="h-4 w-4 text-[#b48a3e] dark:text-[#d4ad65]" />
                         <span>تطريز متقن يحافظ على رونقه مع الاستخدام</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-[#b48a3e]" />
+                        <Check className="h-4 w-4 text-[#b48a3e] dark:text-[#d4ad65]" />
                         <span>يُنصح بالغسيل اليدوي أو بدرجة حرارة منخفضة</span>
                       </li>
                     </motion.ul>

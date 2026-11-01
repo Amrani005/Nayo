@@ -75,14 +75,23 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
   }, [customerName, customerPhone, customerAddress, selectedWilayaID, deliveryType, items, finalTotal, draftId]);
 
   const handleCheckout = async () => {
+    const cleanPhone = customerPhone
+      .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+      .replace(/\D/g, '');
+
     if (!customerAddress || !selectedWilayaID) {
       setMessage('يرجى إدخال العنوان واختيار الولاية.');
       return;
     }
-    if (customerPhone.length !== 10) {
+    if (cleanPhone.length !== 10) {
       setMessage('يرجى إدخال رقم هاتف صحيح مكوّن من 10 أرقام.');
       return;
-    } if(!customerPhone.startsWith('07') || !customerPhone.startsWith('05') ||!customerPhone.startsWith('06')){
+    }
+    if (
+      !cleanPhone.startsWith('07') &&
+      !cleanPhone.startsWith('05') &&
+      !cleanPhone.startsWith('06')
+    ) {
       setMessage('يرجى إدخال رقم هاتف جزائري صحيح يبدأ بـ 05 أو 06 أو 07.');
       return;
     }
@@ -101,7 +110,7 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
         price: items[0]?.price || 0,
         productName: items[0]?.name,
         name: customerName,
-        phone: customerPhone,
+        phone: cleanPhone,
         address: customerAddress,
         wilaya: cityName,
         deliveryType,
@@ -128,33 +137,34 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
   };
 
   return (
-    <div className="bg-white p-6 md:p-8 border border-neutral-200 flex flex-col gap-8">
-      <h2 className="text-sm font-bold uppercase tracking-[0.2em] border-b border-neutral-200 pb-4 text-black">
+    <div className="flex flex-col gap-8 border border-neutral-200 bg-white p-6 text-neutral-900 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 md:p-8">
+      <h2 className="border-b border-neutral-200 pb-4 text-sm font-bold uppercase tracking-[0.2em] text-black dark:border-neutral-700 dark:text-neutral-100">
         معلومات التوصيل
       </h2>
 
       <div className="space-y-6">
         <div className="relative group">
-          <label className="absolute top-3 text-neutral-600 text-xl font-light transition-all duration-300 transform -translate-y-6 scale-75 origin-left">
+          <label className="absolute top-3 origin-left -translate-y-6 scale-75 transform text-xl font-light text-neutral-600 transition-all duration-300 dark:text-neutral-400">
             الاسم الكامل
           </label>
           <input
             type="text"
             value={customerName}
             onChange={(event) => setCustomerName(event.target.value)}
-            className="block w-full bg-transparent border-0 border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors text-sm font-light"
+            className="block w-full border-0 border-b border-neutral-300 bg-transparent py-3 text-sm font-light text-neutral-900 transition-colors focus:border-black focus:outline-none dark:border-neutral-600 dark:text-neutral-100 dark:focus:border-neutral-300"
           />
         </div>
 
         <div className="relative group">
-          <label className="absolute top-3 text-neutral-600 text-xl font-light transition-all duration-300 transform -translate-y-6 scale-75 origin-left">
+          <label className="absolute top-3 origin-left -translate-y-6 scale-75 transform text-xl font-light text-neutral-600 transition-all duration-300 dark:text-neutral-400">
             رقم الهاتف
           </label>
           <input
             type="tel"
+            dir="ltr"
             value={customerPhone}
             onChange={(event) => setCustomerPhone(event.target.value)}
-            className="block w-full bg-transparent border-0 border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors text-sm font-light"
+            className="block w-full border-0 border-b border-neutral-300 bg-transparent py-3 text-sm font-light text-neutral-900 transition-colors focus:border-black focus:outline-none dark:border-neutral-600 dark:text-neutral-100 dark:focus:border-neutral-300"
           />
         </div>
 
@@ -162,25 +172,25 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
           <select
             value={selectedWilayaID}
             onChange={(event) => setSelectedWilayaID(Number(event.target.value))}
-            className="block w-full bg-transparent border-0 border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors text-sm font-light appearance-none"
+            className="block w-full appearance-none border-0 border-b border-neutral-300 bg-transparent py-3 text-sm font-light text-neutral-900 transition-colors focus:border-black focus:outline-none dark:border-neutral-600 dark:text-neutral-100 dark:focus:border-neutral-300"
           >
-            <option value="" disabled>الولاية</option>
+            <option value="" disabled className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">الولاية</option>
             {wilayasData.map((wilaya) => (
-              <option key={wilaya.IDWilaya} value={wilaya.IDWilaya}>
+              <option key={wilaya.IDWilaya} value={wilaya.IDWilaya} className="bg-white text-neutral-900 dark:bg-neutral-900 dark:text-neutral-100">
                 {wilaya.IDWilaya} - {wilaya.Wilaya}
               </option>
             ))}
           </select>
 
           <div className="relative group">
-            <label className="absolute top-3 text-neutral-600 text-xl font-light transition-all duration-300 transform -translate-y-6 scale-75 origin-left">
+            <label className="absolute top-3 origin-left -translate-y-6 scale-75 transform text-xl font-light text-neutral-600 transition-all duration-300 dark:text-neutral-400">
               العنوان بالتفصيل
             </label>
             <input
               type="text"
               value={customerAddress}
               onChange={(event) => setCustomerAddress(event.target.value)}
-              className="block w-full bg-transparent border-0 border-b border-neutral-300 py-3 focus:outline-none focus:border-black transition-colors text-sm font-light"
+              className="block w-full border-0 border-b border-neutral-300 bg-transparent py-3 text-sm font-light text-neutral-900 transition-colors focus:border-black focus:outline-none dark:border-neutral-600 dark:text-neutral-100 dark:focus:border-neutral-300"
             />
           </div>
         </div>
@@ -189,52 +199,52 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
           <button
             type="button"
             onClick={() => setDeliveryType('Domicile')}
-            className={`flex-1 py-4 text-xs font-bold uppercase tracking-[0.1em] border transition-colors ${deliveryType === 'Domicile' ? 'border-black bg-black text-white' : 'border-neutral-300 text-neutral-500 hover:border-black'}`}
+            className={`flex-1 border py-4 text-xs font-bold uppercase tracking-[0.1em] transition-colors ${deliveryType === 'Domicile' ? 'border-black bg-black text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-300 text-neutral-500 hover:border-black dark:border-neutral-600 dark:text-neutral-400 dark:hover:border-neutral-300'}`}
           >
             التوصيل إلى المنزل
           </button>
           <button
             type="button"
             onClick={() => setDeliveryType('Stopdesk')}
-            className={`flex-1 py-4 text-xs font-bold uppercase tracking-[0.1em] border transition-colors ${deliveryType === 'Stopdesk' ? 'border-black bg-black text-white' : 'border-neutral-300 text-neutral-500 hover:border-black'}`}
+            className={`flex-1 border py-4 text-xs font-bold uppercase tracking-[0.1em] transition-colors ${deliveryType === 'Stopdesk' ? 'border-black bg-black text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-300 text-neutral-500 hover:border-black dark:border-neutral-600 dark:text-neutral-400 dark:hover:border-neutral-300'}`}
           >
             التوصيل إلى مكتب الاستلام
           </button>
         </div>
       </div>
 
-      <div className="pt-6 border-t border-neutral-200 space-y-4">
-        <div className="flex justify-between text-sm text-neutral-600">
+      <div className="space-y-4 border-t border-neutral-200 pt-6 dark:border-neutral-700">
+        <div className="flex justify-between text-sm text-neutral-600 dark:text-neutral-400">
           <span>المجموع الفرعي</span>
-          <span className="font-medium text-black">{subtotal.toFixed(2)} DZD</span>
+          <span className="font-medium text-black dark:text-neutral-100">{subtotal.toFixed(2)} DZD</span>
         </div>
-        <div className="flex justify-between text-sm text-neutral-600">
+        <div className="flex justify-between text-sm text-neutral-600 dark:text-neutral-400">
           <span>التوصيل ({deliveryType === 'Domicile' ? 'للمنزل' : 'لمكتب الاستلام'})</span>
-          <span className="font-medium text-black">{shippingTotal.toFixed(2)} DZD</span>
+          <span className="font-medium text-black dark:text-neutral-100">{shippingTotal.toFixed(2)} DZD</span>
         </div>
         {extraCost > 0 && (
-          <div className="flex justify-between text-sm text-neutral-600">
+          <div className="flex justify-between text-sm text-neutral-600 dark:text-neutral-400">
             <span>تكلفة الوزن الإضافي</span>
-            <span className="font-medium text-black">+{extraCost.toFixed(2)} DZD</span>
+            <span className="font-medium text-black dark:text-neutral-100">+{extraCost.toFixed(2)} DZD</span>
           </div>
         )}
-        <div className="flex justify-between text-base font-medium uppercase tracking-widest text-black pt-4 border-t border-neutral-200">
+        <div className="flex justify-between border-t border-neutral-200 pt-4 text-base font-medium uppercase tracking-widest text-black dark:border-neutral-700 dark:text-neutral-100">
           <span>المجموع الكلي</span>
           <span>{finalTotal.toFixed(2)} DZD</span>
         </div>
       </div>
 
-      {message && <p className="text-center text-red-500 text-xs font-bold uppercase tracking-wide">{message}</p>}
+      {message && <p className="text-center text-xs font-bold uppercase tracking-wide text-red-500 dark:text-red-400">{message}</p>}
 
       <button
         type="button"
         onClick={handleCheckout}
         disabled={isLoading || items.length === 0}
-        className="w-full py-5 bg-black text-white text-sm font-bold uppercase tracking-[0.1em] hover:bg-neutral-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-3"
+        className="flex w-full items-center justify-center gap-3 bg-black py-5 text-sm font-bold uppercase tracking-[0.1em] text-white transition-colors hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300"
       >
-        {isLoading ? <span className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" /> : 'تأكيد الطلب'}
+        {isLoading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent dark:border-neutral-900 dark:border-t-transparent" /> : 'تأكيد الطلب'}
       </button>
-      <p className="text-[10px] font-bold text-neutral-400 text-center tracking-[0.2em] uppercase">
+      <p className="text-center text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 dark:text-neutral-500">
         الدفع عند الاستلام
       </p>
     </div>
