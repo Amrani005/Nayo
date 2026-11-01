@@ -52,7 +52,7 @@ export default  function ProductsCard({ products }: { products: Product[] }) {
 
   if (!products || products.length === 0) {
     return (
-      <section dir="rtl" className="mx-auto max-w-7xl px-4 py-16 text-center md:px-8">
+      <section id="products" data-url-section dir="rtl" className="mx-auto max-w-7xl px-4 py-16 text-center md:px-8">
         <div className="rounded-[28px] border border-stone-200 dark:border-stone-700 bg-stone-50/60 dark:bg-stone-900/60 p-12">
           <p className="text-base font-medium text-stone-500 dark:text-stone-400">
             لا توجد منتجات متوفرة حالياً في المتجر.
@@ -63,7 +63,7 @@ export default  function ProductsCard({ products }: { products: Product[] }) {
   }
 
   return (
-    <section id="products" dir="rtl" className="w-full px-4 py-12 md:px-8">
+    <section id="products" data-url-section dir="rtl" className="w-full px-4 py-12 md:px-8">
       <div className="mx-auto max-w-7xl ">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

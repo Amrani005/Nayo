@@ -44,7 +44,7 @@ export default function Category({
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full bg-white dark:bg-stone-900 text-black dark:text-neutral-100 py-16 md:py-24 px-4 md:px-8 border-t border-neutral-200 dark:border-neutral-700">
+    <section id="related-products" data-url-section className="w-full bg-white dark:bg-stone-900 text-black dark:text-neutral-100 py-16 md:py-24 px-4 md:px-8 border-t border-neutral-200 dark:border-neutral-700">
       <div className="max-w-[100rem] mx-auto">
         <div className="flex items-end justify-between border-b border-neutral-200 dark:border-neutral-700 pb-8 mb-10">
           <h2 className="text-3xl md:text-5xl font-medium tracking-tighter uppercase">

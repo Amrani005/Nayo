@@ -4,7 +4,7 @@ import { Geist, Geist_Mono,Tajawal, Cormorant_Garamond} from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import AdminFloatingBar from "@/components/AdminFloatingBar";
-import Header from "@/components/Header";
+import SectionUrlSync from "@/components/SectionUrlSync";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,6 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         
         {children}
+        <SectionUrlSync />
         <Suspense fallback={null}>
           <AdminFloatingBar />
         </Suspense>

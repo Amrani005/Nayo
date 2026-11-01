@@ -167,7 +167,7 @@ const ProductPage = () => {
     >
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
-          <div className="w-full lg:w-1/2">
+          <div id="product-gallery" data-url-section className="w-full lg:w-1/2">
             <div className="sticky top-28 flex flex-col w-full gap-4">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[28px] bg-stone-100 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700/80 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                 {product.imageUrl ? (
@@ -218,7 +218,7 @@ const ProductPage = () => {
             </div>
           </div>
 
-          <div className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-6 pb-20">
+          <div id="product-information" data-url-section className="w-full lg:w-1/2 flex flex-col pt-2 lg:pt-6 pb-20">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -286,6 +286,8 @@ const ProductPage = () => {
             <AnimatePresence>
               {product.id && (
                 <motion.div
+                  id="checkout"
+                  data-url-section
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
@@ -310,6 +312,8 @@ const ProductPage = () => {
 
             
             <motion.div
+              id="product-description"
+              data-url-section
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}

@@ -91,7 +91,7 @@ export default function AdminProductForm({ product }: { product?: ProductFormVal
   }
 
   return (
-    <main dir="rtl" className="mx-auto max-w-[90rem] px-4 py-10 sm:px-8 lg:px-12 lg:py-16">
+    <main id="product-form" data-url-section dir="rtl" className="mx-auto max-w-[90rem] px-4 py-10 sm:px-8 lg:px-12 lg:py-16">
       <div className="mb-10 flex flex-col gap-6 border-b border-stone-200/80 dark:border-stone-700/80 pb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="mb-2 text-xs font-bold text-[#b48a3e] dark:text-[#d4ad65]">إدارة متجر نايو</p>

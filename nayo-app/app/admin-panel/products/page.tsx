@@ -13,7 +13,7 @@ const categoryLabels: Record<string, string> = {
 
 export default function ProductsPage() {
   return (
-    <main dir="rtl" className="mx-auto max-w-[90rem] px-4 py-10 sm:px-8 lg:px-12 lg:py-16">
+    <main id="admin-products" data-url-section dir="rtl" className="mx-auto max-w-[90rem] px-4 py-10 sm:px-8 lg:px-12 lg:py-16">
       <div className="mb-10 flex flex-col gap-6 border-b border-stone-200/80 dark:border-stone-700/80 pb-8 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="mb-2 text-xs font-bold text-[#b48a3e] dark:text-[#d4ad65]">إدارة متجر نايو</p>
@@ -41,7 +41,7 @@ async function ProductsTable() {
   const products = await db.product.findMany({ orderBy: { createdAt: "desc" } });
 
   return (
-    <div className="overflow-hidden rounded-[24px] border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+    <div id="product-list" data-url-section className="overflow-hidden rounded-[24px] border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[680px] text-right">
           <thead>

@@ -6,6 +6,8 @@ import {  Lock, Sparkles, ArrowUpLeft } from "lucide-react";
 const Footer = () => {
   return (
     <footer
+      id="footer"
+      data-url-section
       dir="rtl"
       className="w-full border-t border-stone-200/80 dark:border-stone-700/80 bg-stone-50/60 dark:bg-stone-900/60 font-['Tajawal',sans-serif] text-[#141414] dark:text-stone-100"
     >
@@ -52,13 +54,7 @@ const Footer = () => {
             ©  متجر نايو (NAYO). جميع الحقوق محفوظة.
           </p>
 
-          <Link
-            href="/admin-panel"
-            className="inline-flex items-center gap-1.5 text-stone-400 dark:text-stone-400 transition-colors hover:text-[#b48a3e] dark:hover:text-[#d4ad65]"
-          >
-            <Lock className="h-3.5 w-3.5" />
-            <span>بوابة الإدارة</span>
-          </Link>
+          
         </div>
       </div>
     </footer>

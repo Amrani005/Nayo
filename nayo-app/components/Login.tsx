@@ -10,7 +10,9 @@ const Login = () => {
   const [state, formAction, isPending] = useActionState(loginOwner, null);
 
   return (
-    <div
+    <main
+      id="login"
+      data-url-section
       dir="rtl"
       className="relative flex min-h-screen w-full items-center justify-center bg-stone-50/70 dark:bg-stone-900/70 px-4 py-12 font-['Tajawal',sans-serif] text-[#141414] dark:text-stone-100 selection:bg-[#141414] dark:selection:bg-white selection:text-white dark:selection:text-neutral-900"
     >
@@ -133,7 +135,7 @@ const Login = () => {
           </Link>
         </div>
       </motion.div>
-    </div>
+    </main>
   );
 };
 

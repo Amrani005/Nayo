@@ -60,6 +60,8 @@ export default async function DashboardOverview({}) {
     </div>
 
     <section
+      id="store-statistics"
+      data-url-section
       aria-label="إحصائيات المتجر"
       className="mb-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
     >
@@ -86,7 +88,7 @@ export default async function DashboardOverview({}) {
       ))}
     </section>
 
-    <section>
+    <section id="recent-orders" data-url-section>
       <div className="mb-5 flex items-end justify-between border-b border-stone-200/80 dark:border-stone-700/80 pb-4">
         <h2 className="text-xl font-bold tracking-tight text-[#141414] dark:text-stone-100">
           أحدث الطلبات

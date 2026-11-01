@@ -32,7 +32,7 @@ export default function AdminOrderLedger({orders,drafts = false,}:{orders: Admin
     : ["pending", "confirmed", "shipped", "delivered", "cancelled"];
 
   return (
-    <div className="overflow-hidden rounded-[24px] border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
+    <div id="orders-table" data-url-section className="overflow-hidden rounded-[24px] border border-stone-200/80 dark:border-stone-700/80 bg-white dark:bg-stone-900 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
       <div className="overflow-x-auto">
       <table className="w-full min-w-[980px] text-right">
         <thead>

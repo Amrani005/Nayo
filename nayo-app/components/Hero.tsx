@@ -26,7 +26,7 @@ export default function HeroSlider() {
 
   return (
     
-      <div id="hero" className="relative font-tajawal mx-auto h-[600px] md:h-[680px] w-full overflow-hidden  bg-[#141414] dark:bg-neutral-800
+      <div id="hero" data-url-section className="relative font-tajawal mx-auto h-[600px] md:h-[680px] w-full overflow-hidden  bg-[#141414] dark:bg-neutral-800
        text-white shadow-2xl ">
         
         

@@ -33,7 +33,7 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-2 sm:gap-2.5">
-          <Link
+          <a
             href="#products"
             className="hidden sm:inline-flex group items-center gap-2.5 rounded-full pl-4 pr-1.5 py-1.5 text-xs md:text-sm font-medium text-white transition-transform duration-200 hover:scale-105 active:scale-95"
           >
@@ -41,7 +41,7 @@ export default function Header() {
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-stone-900 text-[#141414] dark:text-stone-100 transition-transform duration-200 group-hover:translate-x-0.5">
               <ArrowUpRight className="h-3.5 w-3.5" />
             </span>
-          </Link>
+          </a>
 
           <button
             type="button"
@@ -85,7 +85,7 @@ export default function Header() {
               })}
 
               <div className="mt-3 pt-3 border-t border-stone-200 dark:border-stone-700">
-                <Link
+                <a
                   href="#products"
                   onClick={() => setMobileMenuOpen(false)}
                   onClickCapture={() => setMobileMenuOpen(false)}
@@ -93,7 +93,7 @@ export default function Header() {
                 >
                   <span>اكتشفي التشكيلة</span>
                   <ArrowUpRight className="h-4 w-4" />
-                </Link>
+                </a>
               </div>
             </nav>
           </motion.div>
