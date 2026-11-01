@@ -1,9 +1,18 @@
 "use client";
 
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 export default function SectionUrlSync() {
+  return (
+    <Suspense fallback={null}>
+      <SectionUrlSyncInner />
+    </Suspense>
+  );
+}
+
+function SectionUrlSyncInner() {
   const pathname = usePathname();
 
   useEffect(() => {
