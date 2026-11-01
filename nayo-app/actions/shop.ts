@@ -2,8 +2,72 @@
 
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache"; 
+import { draftOrderStatuses } from "@/constants";
 
-//Method to get the product data
+type OrderDetailsItem = {
+  productId?: string;
+  id?: string;
+  name?: string;
+  quantity?: number;
+  price?: number;
+  size?: string;
+  sizes?: string[];
+};
+
+type OrderDetailsInput = {
+  cartItems?: unknown;
+  productId?: string;
+  productName?: string;
+  quantity?: number;
+  price?: number;
+  size?: string;
+  wilaya?: string;
+  deliveryType?: string;
+};
+
+type CheckoutOrderData = OrderDetailsInput & {
+  draftId?: string | null;
+  name: string;
+  phone: string;
+  address: string;
+  total: number;
+};
+
+function serializeOrderDetails(data: OrderDetailsInput) {
+  const cartItems = Array.isArray(data.cartItems)
+    ? data.cartItems.filter(
+        (item): item is OrderDetailsItem =>
+          item !== null && typeof item === "object" && !Array.isArray(item)
+      )
+    : [];
+  const sourceItems: OrderDetailsItem[] = cartItems.length > 0
+    ? cartItems
+    : [{
+        productId: data.productId,
+        name: data.productName,
+        quantity: data.quantity,
+        price: data.price,
+        size: data.size,
+      }];
+  const items = sourceItems.map((item) => ({
+    productId: item.productId || item.id,
+    name: item.name || data.productName,
+    quantity: Math.max(1, Number(item.quantity) || 1),
+    price: Number(item.price) || 0,
+    size: item.size || item.sizes?.[0] || "Standard",
+    sizes: item.sizes?.filter((size) => typeof size === "string") ?? [],
+  }));
+  const firstItem = items[0];
+
+  return JSON.stringify({
+    ...firstItem,
+    wilaya: data.wilaya,
+    wilya: data.wilaya,
+    deliveryType: data.deliveryType,
+    items,
+  });
+}
+
 export async function getProductById(id: string){
     if(!id)return ;
     const product = await db.product.findUnique({
@@ -12,23 +76,19 @@ export async function getProductById(id: string){
     })
     return product;
 }
-export async function saveDraftOrder(data: any) {
-   const orderItems = JSON.stringify({
-     productId : data.productId,
-     quantity: data.quantity,
-     price: data.price,
-     wilya : data.wilaya, 
-     deliveryType: data.deliveryType,
-     size: data.size || "Standard"
-   });
+export async function saveDraftOrder(data: CheckoutOrderData) {
+   const orderItems = serializeOrderDetails(data);
    
    const fullAdress = `${data.address} - ولاية: ${data.wilaya} (${data.deliveryType})`;
 
    let resultDraftId = null;
 
    if(data.draftId){
-    await db.order.update({
-      where : {id : data.draftId},
+    const updatedDraft = await db.order.updateMany({
+      where: {
+        id: data.draftId,
+        status: { in: draftOrderStatuses },
+      },
       data:{
         customerName: data.name,
         customerPhone: data.phone,
@@ -38,6 +98,9 @@ export async function saveDraftOrder(data: any) {
         orderItems: orderItems, 
       }
     });
+    if (updatedDraft.count !== 1) {
+      throw new Error("The checkout draft could not be found or was already completed.");
+    }
     resultDraftId = data.draftId;
    } else {
     const newDraft = await db.order.create({
@@ -68,35 +131,46 @@ export async function saveDraftOrder(data: any) {
     }
    }
    
-   revalidatePath("/dashboard/draft");
-   revalidatePath("/dashboard/orders");
-   revalidatePath("/dashboard");
+   revalidatePath("/admin-panel");
+   revalidatePath("/admin-panel/draft");
+   revalidatePath("/admin-panel/orders");
 
    return {draftId : resultDraftId}
 }
 
-export async function placeOrder(data:any){
+export async function placeOrder(data: CheckoutOrderData){
     
-       const orderDetail = JSON.stringify({
-          productId : data.productId,
-          quantity: data.quantity,
-          price: data.price,
-          wilya : data.wilaya,
-          deliveryType: data.deliveryType,
-          size: data.size || "Standard"
-       })
+       const orderDetail = serializeOrderDetails(data);
        const fullAdress = `${data.address}-wilaya:${data.wilaya} (${data.deliveryType})`
 
-       const newOrder = await db.order.create({
-        data:{
-            customerName: data.name,
-            customerPhone: data.phone,
-            customerAddress: fullAdress,
-            totalPrice: Number(data.total),
-            status: "pending", 
-            orderItems: orderDetail,
-        }
-       })
+       const orderData = {
+          customerName: data.name,
+          customerPhone: data.phone,
+          customerAddress: fullAdress,
+          totalPrice: Number(data.total),
+          status: "pending",
+          orderItems: orderDetail,
+       };
+
+       const draftId = data.draftId;
+       const newOrder = await db.$transaction(async (transaction) => {
+         const order = await transaction.order.create({ data: orderData });
+
+         if (draftId) {
+           const deletedDraft = await transaction.order.deleteMany({
+             where: {
+               id: draftId,
+               status: { in: draftOrderStatuses },
+             },
+           });
+
+           if (deletedDraft.count !== 1) {
+             throw new Error("The checkout order was not submitted because its draft could not be deleted.");
+           }
+         }
+
+         return order;
+       });
 
        if (newOrder) {
           const baserowData = {
@@ -112,9 +186,9 @@ export async function placeOrder(data:any){
         };
          
 
-        revalidatePath("/dashboard/orders");
-        revalidatePath("/dashboard/draft");
-        revalidatePath("/dashboard");
+        revalidatePath("/admin-panel");
+        revalidatePath("/admin-panel/orders");
+        revalidatePath("/admin-panel/draft");
 
        return { success: true, orderId: newOrder.id };
     }
@@ -122,15 +196,24 @@ export async function placeOrder(data:any){
 }
 
 export async function deletDraft(formData: FormData){
-  const draftId = formData.get("draftId") as string;
-   await db.order.deleteMany({
-    where:{
-      id:draftId
-    }
-   });
+  const draftId = formData.get("draftId");
+  if (typeof draftId !== "string" || !draftId) {
+    throw new Error("A draft order ID is required.");
+  }
+
+  const deletedDraft = await db.order.deleteMany({
+    where: {
+      id: draftId,
+      status: { in: draftOrderStatuses },
+    },
+  });
+  if (deletedDraft.count !== 1) {
+    throw new Error("The draft order could not be found or was already removed.");
+  }
    
-   revalidatePath("/dashboard/draft");
-   revalidatePath("/dashboard");
+   revalidatePath("/admin-panel");
+   revalidatePath("/admin-panel/draft");
+   revalidatePath("/admin-panel/orders");
 }
  export async function getProductWithRelated(id: string) {
   try {
@@ -199,4 +282,3 @@ export async function getRelatedProducts(
     hasMore: products.length > RELATED_PRODUCTS_PAGE_SIZE,
   };
 }
-

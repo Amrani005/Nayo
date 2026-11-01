@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArchiveRestore,Icon, ArrowUpLeft, Package, Plus, ShoppingBag } from "lucide-react";
 import { db } from "@/lib/db";
-import { orderStatusColors, orderStatuses } from "@/constants";
+import { draftOrderStatuses, orderStatusColors, orderStatuses } from "@/constants";
 import { count } from "console";
 
 
@@ -17,10 +17,14 @@ const formatDate = (date: Date) =>
 export default async function DashboardOverview({}) {
   const [productsCount, ordersCount, draftsCount, recentOrders] = await Promise.all([
     db.product.count(),
-    db.order.count({ where: { status: { not: "draft" } } }),
-    db.order.count({ where: { status: "draft" } }),
+    db.order.count({
+      where: { status: { notIn: draftOrderStatuses } },
+    }),
+    db.order.count({
+      where: { status: { in: draftOrderStatuses } },
+    }),
     db.order.findMany({
-      where: { status: { not: "draft" } },
+      where: { status: { notIn: draftOrderStatuses } },
       orderBy: { createdAt: "desc" },
       take: 5,
       select: { id: true, customerName: true, totalPrice: true, status: true, createdAt: true },

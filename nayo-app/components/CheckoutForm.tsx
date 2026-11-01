@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { deletDraft, placeOrder, saveDraftOrder } from '@/actions/shop';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { placeOrder, saveDraftOrder } from '@/actions/shop';
 import { wilayasData } from '@/lib/wilayasData';
 
 type CheckoutItem = {
@@ -12,78 +12,126 @@ type CheckoutItem = {
   price: number;
   img?: string;
   size?: string;
+  availableSizes?: string[];
   quantity?: number;
 };
 
 type CheckoutFormProps = {
   items: CheckoutItem[];
   onOrderComplete?: () => void;
+  size?: string | null;
+  onSizeChange?: (size: string) => void;
 };
 
-export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormProps) {
+export default function CheckoutForm({ items, onOrderComplete, size, onSizeChange }: CheckoutFormProps) {
+  const [quantities, setQuantities] = useState(() => items.map((item) => Math.max(1, item.quantity ?? 1)));
+  const [selectedSizes, setSelectedSizes] = useState(() => items.map((item) =>
+    Array.from({ length: Math.max(1, item.quantity ?? 1) }, () => item.size ?? '')
+  ));
   const [customerName, setCustomerName] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerAddress, setCustomerAddress] = useState('');
   const [selectedWilayaID, setSelectedWilayaID] = useState<number | ''>('');
   const [deliveryType, setDeliveryType] = useState<'Domicile' | 'Stopdesk'>('Domicile');
-  const [draftId, setDraftId] = useState<string | null>(null);
-  const [shippingTotal, setShippingTotal] = useState(0);
-  const [extraCost, setExtraCost] = useState(0);
+  const draftIdRef = useRef<string | null>(null);
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingDraftSaveRef = useRef<Promise<string | null> | null>(null);
+  const orderCompletedRef = useRef(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const subtotal = items.reduce((total, item) => total + Number(item.price) * (item.quantity || 1), 0);
+  const orderItems = useMemo(() => items.map((item, index) => {
+    const quantity = Math.max(1, quantities[index] ?? item.quantity ?? 1);
+    const sizes = Array.from({ length: quantity }, (_, unitIndex) =>
+      selectedSizes[index]?.[unitIndex] || (index === 0 ? size : '') || item.size || ''
+    );
+    return {
+      ...item,
+      quantity,
+      size: sizes[0] || '',
+      sizes,
+    };
+  }), [items, quantities, selectedSizes, size]);
+  const totalItemsCount = orderItems.reduce((total, item) => total + item.quantity, 0);
+  const extraWeight = Math.max(0, Math.floor(0.75 * totalItemsCount) - 5);
+  const extraCost = extraWeight * 50;
+  const selectedWilaya = selectedWilayaID
+    ? wilayasData.find((wilaya) => wilaya.IDWilaya === Number(selectedWilayaID))
+    : undefined;
+  const shippingTotal = selectedWilaya ? Number(selectedWilaya[deliveryType]) || 0 : 0;
+  const subtotal = orderItems.reduce((total, item) => total + Number(item.price) * item.quantity, 0);
   const finalTotal = subtotal + shippingTotal + extraCost;
 
+  const saveCurrentDraft = useCallback(async (currentDraftId: string | null) => {
+    const wilaya = selectedWilayaID
+      ? wilayasData.find((item) => item.IDWilaya === Number(selectedWilayaID))?.Wilaya
+      : '';
+    const result = await saveDraftOrder({
+      draftId: currentDraftId,
+      cartItems: orderItems,
+      name: customerName,
+      phone: customerPhone,
+      address: customerAddress,
+      wilaya,
+      deliveryType,
+      total: finalTotal,
+      productId: items[0]?.productId || items[0]?.id,
+      quantity: orderItems[0]?.quantity ?? 1,
+      price: items[0]?.price || 0,
+      productName: items[0]?.name,
+      size: orderItems[0]?.size,
+    });
+
+    if (!result?.draftId) {
+      throw new Error('Saving the checkout draft did not return an ID.');
+    }
+
+    draftIdRef.current = result.draftId;
+    return result.draftId;
+  }, [selectedWilayaID, items, orderItems, customerName, customerPhone, customerAddress, deliveryType, finalTotal]);
+
   useEffect(() => {
-    const totalItemsCount = items.reduce((total, item) => total + (item.quantity || 1), 0);
-    const extraWeight = Math.max(0, Math.floor(0.75 * totalItemsCount) - 5);
-    setExtraCost(extraWeight * 50);
+    if (orderCompletedRef.current || isLoading || !customerPhone || customerPhone.length !== 10 || items.length === 0) return;
 
-    const wilayaInfo = selectedWilayaID
-      ? wilayasData.find((wilaya) => wilaya.IDWilaya === Number(selectedWilayaID))
-      : undefined;
-    setShippingTotal(wilayaInfo ? Number(wilayaInfo[deliveryType]) || 0 : 0);
-  }, [items, selectedWilayaID, deliveryType]);
-
-  useEffect(() => {
-    if (!customerPhone || customerPhone.length !== 10 || items.length === 0) return;
-
-    const timer = setTimeout(async () => {
-      const wilaya = selectedWilayaID
-        ? wilayasData.find((item) => item.IDWilaya === Number(selectedWilayaID))?.Wilaya
-        : '';
-
-      try {
-        const result = await saveDraftOrder({
-          draftId,
-          cartItems: items,
-          name: customerName,
-          phone: customerPhone,
-          address: customerAddress,
-          wilaya,
-          deliveryType,
-          total: finalTotal,
+    draftTimerRef.current = setTimeout(() => {
+      const previousSave = pendingDraftSaveRef.current ?? Promise.resolve(null);
+      const savePromise = previousSave
+        .catch(() => null)
+        .then(() => saveCurrentDraft(draftIdRef.current));
+      pendingDraftSaveRef.current = savePromise;
+      void savePromise
+        .catch((error: unknown) => console.error('Draft save failed', error))
+        .finally(() => {
+          if (pendingDraftSaveRef.current === savePromise) {
+            pendingDraftSaveRef.current = null;
+          }
         });
-        if (result?.draftId) setDraftId(result.draftId);
-      } catch (error) {
-        console.error('Draft save failed', error);
-      }
     }, 1000);
 
-    return () => clearTimeout(timer);
-  }, [customerName, customerPhone, customerAddress, selectedWilayaID, deliveryType, items, finalTotal, draftId]);
+    return () => {
+      if (draftTimerRef.current) {
+        clearTimeout(draftTimerRef.current);
+        draftTimerRef.current = null;
+      }
+    };
+  }, [customerPhone, items.length, isLoading, saveCurrentDraft]);
 
   const handleCheckout = async () => {
+    if (orderCompletedRef.current || isLoading) return;
+    if (orderItems.some((item) =>
+      item.availableSizes?.length && item.sizes.some((itemSize) => !itemSize)
+    )) {
+      setMessage('يرجى اختيار مقاس لكل قطعة قبل إتمام الطلب.');
+      return;
+    }
     const cleanPhone = customerPhone
       .replace(/[٠-٩]/g, (d) => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
       .replace(/\D/g, '');
-
     if (!customerAddress || !selectedWilayaID) {
       setMessage('يرجى إدخال العنوان واختيار الولاية.');
       return;
     }
-    if (cleanPhone.length !== 10) {
+    if (customerPhone.length !== 10) {
       setMessage('يرجى إدخال رقم هاتف صحيح مكوّن من 10 أرقام.');
       return;
     }
@@ -102,29 +150,31 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
     const cityName = wilayasData.find((wilaya) => wilaya.IDWilaya === Number(selectedWilayaID))?.Wilaya || '';
 
     try {
+      if (draftTimerRef.current) {
+        clearTimeout(draftTimerRef.current);
+        draftTimerRef.current = null;
+      }
+      await pendingDraftSaveRef.current;
+
       const result = await placeOrder({
-        draftId,
-        cartItems: items,
+        draftId: draftIdRef.current,
+        cartItems: orderItems,
         productId: items[0]?.productId || items[0]?.id,
-        quantity: items[0]?.quantity || 1,
+        quantity: orderItems[0]?.quantity ?? 1,
         price: items[0]?.price || 0,
         productName: items[0]?.name,
         name: customerName,
-        phone: cleanPhone,
+        phone: customerPhone,
         address: customerAddress,
         wilaya: cityName,
         deliveryType,
         total: finalTotal,
-        size: items[0]?.size,
+        size: orderItems[0]?.size,
       });
 
       if (result?.success) {
-        if (draftId) {
-          const formData = new FormData();
-          formData.append('draftId', draftId);
-          await deletDraft(formData);
-        }
-        setDraftId(null);
+        orderCompletedRef.current = true;
+        draftIdRef.current = null;
         onOrderComplete?.();
         alert('تم استلام طلبك بنجاح.');
       }
@@ -193,6 +243,94 @@ export default function CheckoutForm({ items, onOrderComplete }: CheckoutFormPro
               className="block w-full border-0 border-b border-neutral-300 bg-transparent py-3 text-sm font-light text-neutral-900 transition-colors focus:border-black focus:outline-none dark:border-neutral-600 dark:text-neutral-100 dark:focus:border-neutral-300"
             />
           </div>
+        </div>
+
+        <div className="space-y-4 border-b border-neutral-200 pb-4 dark:border-neutral-700">
+          {orderItems.map((item, index) => {
+            const availableSizes = item.availableSizes ?? [];
+            return (
+            <div key={`${item.productId || item.id || 'item'}-${index}`} className="space-y-3">
+              <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                {item.name || `المنتج ${index + 1}`}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">الكمية</span>
+                <div className="flex items-center gap-4" dir="ltr">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextQuantity = Math.max(1, item.quantity - 1);
+                      setQuantities((current) => current.map((value, itemIndex) =>
+                        itemIndex === index ? nextQuantity : value
+                      ));
+                      setSelectedSizes((current) => current.map((unitSizes, itemIndex) =>
+                        itemIndex === index ? unitSizes.slice(0, nextQuantity) : unitSizes
+                      ));
+                    }}
+                    disabled={isLoading || item.quantity <= 1}
+                    aria-label={`تقليل كمية ${item.name || `المنتج ${index + 1}`}`}
+                    className="flex h-9 w-9 items-center justify-center border border-neutral-300 text-lg transition-colors hover:border-black disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-600 dark:hover:border-neutral-300"
+                  >
+                    −
+                  </button>
+                  <span className="min-w-6 text-center text-sm font-semibold" aria-live="polite">{item.quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setQuantities((current) => current.map((value, itemIndex) =>
+                        itemIndex === index ? value + 1 : value
+                      ));
+                      setSelectedSizes((current) => current.map((unitSizes, itemIndex) =>
+                        itemIndex === index
+                          ? [...unitSizes, index === 0 ? size || '' : item.size || '']
+                          : unitSizes
+                      ));
+                    }}
+                    disabled={isLoading}
+                    aria-label={`زيادة كمية ${item.name || `المنتج ${index + 1}`}`}
+                    className="flex h-9 w-9 items-center justify-center border border-neutral-300 text-lg transition-colors hover:border-black disabled:cursor-not-allowed disabled:opacity-40 dark:border-neutral-600 dark:hover:border-neutral-300"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              {availableSizes.length > 0 && item.sizes.map((unitSize, unitIndex) => (
+                <div key={`${item.productId || item.id || index}-unit-${unitIndex}`} className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    القطعة {unitIndex + 1} - المقاس:
+                  </span>
+                  {availableSizes.map((availableSize) => (
+                    <button
+                      key={availableSize}
+                      type="button"
+                      onClick={() => {
+                        if (index === 0 && unitIndex === 0 && onSizeChange) {
+                          onSizeChange(availableSize);
+                        }
+                        setSelectedSizes((current) => current.map((unitSizes, itemIndex) =>
+                          itemIndex === index
+                            ? unitSizes.map((currentSize, currentUnit) =>
+                                currentUnit === unitIndex ? availableSize : currentSize
+                              )
+                            : unitSizes
+                        ));
+                      }}
+                      disabled={isLoading}
+                      aria-pressed={unitSize === availableSize}
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                        unitSize === availableSize
+                          ? 'border-black bg-black text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
+                          : 'border-neutral-300 text-neutral-600 dark:border-neutral-600 dark:text-neutral-300'
+                      }`}
+                    >
+                      {availableSize}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+            );
+          })}
         </div>
 
         <div className="flex gap-4 pt-4">

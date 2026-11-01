@@ -76,6 +76,8 @@ export const orderStatuses: Record<string, string> = {
   draft: "مسودة",
 };
 
+export const draftOrderStatuses = ["draft", "Draft", "DRAFT"];
+
 export const orderStatusColors: Record<string, string> = {
   pending: "bg-orange-100 text-orange-800 dark:bg-orange-950 dark:text-orange-300",
   confirmed: "bg-yellow-100 text-yellow-800 dark:bg-yellow-950 dark:text-yellow-300",

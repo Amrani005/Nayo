@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import { db } from "@/lib/db";
 import AdminOrderLedger from "@/components/AdminOrderLedger";
+import { draftOrderStatuses } from "@/constants";
+
 
 export default function OrdersPage() {
   return (
@@ -21,7 +23,7 @@ export default function OrdersPage() {
 
 async function OrdersTable() {
   const orders = await db.order.findMany({
-    where: { status: { not: "draft" } },
+    where: { status: { notIn: draftOrderStatuses } },
     orderBy: { createdAt: "desc" },
   });
 

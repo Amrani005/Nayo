@@ -4,9 +4,22 @@ import React, { useState, useEffect, useRef, useTransition } from "react";
 import { useParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {  Sparkles,  Check } from "lucide-react";
-import { getProductWithRelated,getRelatedProducts } from "@/actions/shop";
+import { getProductWithRelated, getRelatedProducts } from "@/actions/shop";
 import CheckoutForm from "@/components/CheckoutForm";
 import Category from "@/components/Category";
+
+function parseSizes(value: string | null | undefined) {
+  if (!value) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.filter((size): size is string => typeof size === "string" && size.length > 0);
+    }
+  } catch {
+    return value.split(",").map((size) => size.trim()).filter(Boolean);
+  }
+  return value.split(",").map((size) => size.trim()).filter(Boolean);
+}
 
 const ProductPage = () => {
   const params = useParams();
@@ -68,17 +81,7 @@ const ProductPage = () => {
       new Set([data.imageUrl, ...galleryImages].filter(Boolean))
     );
 
-    let parsedSizes: string[] = [];
-    if (data.size) {
-      try {
-        const parsed = JSON.parse(data.size);
-        parsedSizes = Array.isArray(parsed)
-          ? parsed
-          : String(data.size).split(",").map((s) => s.trim()).filter(Boolean);
-      } catch {
-        parsedSizes = String(data.size).split(",").map((s) => s.trim()).filter(Boolean);
-      }
-    }
+    const parsedSizes = parseSizes(data.size);
 
     setProduct({
       id: data.id,
@@ -294,6 +297,8 @@ const ProductPage = () => {
                   className="overflow-hidden pt-6"
                 >
                   <CheckoutForm
+                    size={selectedSize}
+                    onSizeChange={setSelectedSize}
                     items={[
                       {
                         productId: product.id,
@@ -302,6 +307,7 @@ const ProductPage = () => {
                         price: product.price,
                         img: product.imageUrl,
                         size: selectedSize ?? undefined,
+                        availableSizes: product.size,
                         quantity: 1,
                       },
                     ]}

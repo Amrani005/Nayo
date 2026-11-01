@@ -32,13 +32,12 @@ const Login = () => {
         <div className="mb-8 flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-6">
           <Link
             href="/"
-            className="font-serif text-2xl font-extrabold tracking-tight text-[#141414] dark:text-stone-100 transition-colors hover:text-[#b48a3e] dark:hover:text-[#d4ad65]"
+            className=" text-2xl font-extrabold tracking-tight text-[#141414] dark:text-stone-100 transition-colors hover:text-[#b48a3e] dark:hover:text-[#d4ad65]"
           >
             نايو <span className="text-sm font-medium text-[#b48a3e] dark:text-[#d4ad65]">NAYO</span>
           </Link>
 
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#b48a3e] dark:text-[#d4ad65]">
-            <Sparkles className="h-4 w-4" />
             <span>بوابة الإدارة</span>
           </div>
         </div>

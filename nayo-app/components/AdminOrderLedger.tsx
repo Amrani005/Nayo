@@ -51,10 +51,13 @@ export default function AdminOrderLedger({orders,drafts = false,}:{orders: Admin
           {orders.length ? (
             orders.map((order) => {
               const details = parseOrderDetails(order.orderItems);
-              const quantity =
-                typeof details.quantity === "number" || typeof details.quantity === "string"
-                  ? details.quantity
-                  : 1;
+              const savedOrderLines = Array.isArray(details.items)
+                ? details.items.filter(
+                    (item): item is Record<string, unknown> =>
+                      item !== null && typeof item === "object" && !Array.isArray(item)
+                  )
+                : [];
+              const orderLines = savedOrderLines.length ? savedOrderLines : [details];
               const wilaya =
                 typeof details.wilaya === "string"
                   ? details.wilaya
@@ -92,10 +95,36 @@ export default function AdminOrderLedger({orders,drafts = false,}:{orders: Admin
                   </td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col gap-1 text-xs">
-                      <span className="flex items-center gap-2 font-bold text-[#141414] dark:text-stone-100">
-                        <Package className="h-3.5 w-3.5 text-stone-400 dark:text-stone-400" />
-                        الكمية: {quantity}
-                      </span>
+                      {orderLines.map((item, index) => {
+                        const quantity =
+                          typeof item.quantity === "number" || typeof item.quantity === "string"
+                            ? item.quantity
+                            : 1;
+                        const sizes = Array.isArray(item.sizes)
+                          ? item.sizes.filter(
+                              (value): value is string =>
+                                typeof value === "string" && value.trim().length > 0
+                            )
+                          : [];
+                        const size =
+                          sizes.length > 0
+                            ? sizes.join("، ")
+                            : typeof item.size === "string" && item.size.trim()
+                              ? item.size
+                              : "غير محدد";
+                        const name = typeof item.name === "string" ? item.name : "";
+
+                        return (
+                          <div key={`${order.id}-item-${index}`} className="flex flex-col gap-1">
+                            {name && <span className="font-bold text-[#141414] dark:text-stone-100">{name}</span>}
+                            <span className="flex items-center gap-2 font-bold text-[#141414] dark:text-stone-100">
+                              <Package className="h-3.5 w-3.5 text-stone-400 dark:text-stone-400" />
+                              الكمية: {quantity}
+                            </span>
+                            <span className="font-medium text-stone-500 dark:text-stone-400">المقاسات: {size}</span>
+                          </div>
+                        );
+                      })}
                       <span className="font-medium text-stone-500 dark:text-stone-400">{deliveryType}</span>
                     </div>
                   </td>
