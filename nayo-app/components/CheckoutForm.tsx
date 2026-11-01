@@ -232,9 +232,9 @@ export default function CheckoutForm({ items, onOrderComplete, size, onSizeChang
             ))}
           </select>
 
-          <div className="relative group">
-            <label className="absolute top-3 origin-left -translate-y-6 scale-75 transform text-xl font-light text-neutral-600 transition-all duration-300 dark:text-neutral-400">
-              العنوان بالتفصيل
+          <div className="relative group ">
+            <label className="absolute top-2 origin-left -translate-y-6 scale-75 transform text-xl font-light text-neutral-600 transition-all duration-300 dark:text-neutral-400">
+              العنوان 
             </label>
             <input
               type="text"
