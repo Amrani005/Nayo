@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String   @default("Uncategorized")
+  price       Float
+  size        String   @default("[]")
+  imageUrl    String
+  images      String   @default("[]")
+  isFeatured  Boolean  @default(false)
+  isArchived  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  cartItems   CartItem[]
+  
+}
+model Owner {
+  email       String @unique
+  password    String @unique
+}
+
+model Order {
+  id              String   @id @default(uuid())
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  totalPrice      Float
+  status          String   @default("pending")
+  isPaid          Boolean  @default(false)
+  orderItems      String  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+model User {
+  id              String  @id @default(cuid())
+  username        String
+  useremail       String  @unique
+  userpassword    String  @unique
+  cart            Cart?
+  createdAt       DateTime @default(now())
+}
+model Cart {
+  id              String @id @default(cuid())
+  userId          String @unique
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  item            CartItem[]
+}
+model CartItem {
+  id              String @id @default(cuid())
+  cartId          String 
+  cart            Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId        String 
+  product         Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity        Int    @default(1)
+  size            String
+
+  @@unique([cartId, productId, size])
+
+}
