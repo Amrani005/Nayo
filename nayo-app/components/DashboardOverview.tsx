@@ -113,7 +113,7 @@ export default async function DashboardOverview({}) {
             </thead>
             <tbody className="divide-y divide-stone-100">
               {recentOrders.length ? (
-                recentOrders.map((order) => (
+                recentOrders.map((order: any) => (
                   <tr
                     key={order.id}
                     className="text-sm transition-colors hover:bg-stone-50/60"

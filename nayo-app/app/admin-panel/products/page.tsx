@@ -55,7 +55,7 @@ async function ProductsTable() {
           </thead>
           <tbody className="divide-y divide-stone-100">
             {products.length ? (
-              products.map((product) => (
+              products.map((product: any) => (
                 <tr key={product.id} className="text-sm transition-colors hover:bg-stone-50/60">
                   <td className="px-6 py-5 font-bold text-[#141414]">{product.name}</td>
                   <td className="px-6 py-5 text-sm font-medium text-stone-500">{categoryLabels[product.category] ?? product.category}</td>
