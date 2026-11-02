@@ -58,7 +58,9 @@ export default function CheckoutForm({ items, onOrderComplete, size, onSizeChang
   const selectedWilaya = selectedWilayaID
     ? wilayasData.find((wilaya) => wilaya.IDWilaya === Number(selectedWilayaID))
     : undefined;
-  const shippingTotal = selectedWilaya ? Number(selectedWilaya[deliveryType]) || 0 : 0;
+  const shippingTotal = selectedWilaya
+    ? Number(selectedWilaya[deliveryType]) || 0
+    : 0;
   const subtotal = orderItems.reduce((total, item) => total + Number(item.price) * item.quantity, 0);
   const finalTotal = subtotal + shippingTotal + extraCost;
 
