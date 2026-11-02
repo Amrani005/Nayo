@@ -63,7 +63,6 @@ export const NAV_LINKS: NavLink[] = [
   { label: "الرئيسية", href: "/" },
   { label: "كل المنتجات", href: "#products" },
   { label: "عبايات", href: "/?category=abayas#products" },
-  { label: "قنادر", href: "/?category=gandouras#products" },
   
 ];
 

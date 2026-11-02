@@ -6,7 +6,7 @@ import { deleteProducts } from "@/actions/deleteProducts";
 
 const categoryLabels: Record<string, string> = {
   Abayas: "عبايات",
-  Gandouras: "قنادر",
+  Gandouras: "منتجات أخرى",
   Accessories: "إكسسوارات",
   Uncategorized: "غير مصنف",
 };
@@ -58,7 +58,7 @@ async function ProductsTable() {
               products.map((product: any) => (
                 <tr key={product.id} className="text-sm transition-colors hover:bg-stone-50/60 dark:hover:bg-stone-800/60">
                   <td className="px-6 py-5 font-bold text-[#141414] dark:text-stone-100">{product.name}</td>
-                  <td className="px-6 py-5 text-sm font-medium text-stone-500 dark:text-stone-400">{categoryLabels[product.category] ?? product.category}</td>
+                  <td className="px-6 py-5 text-sm font-medium text-stone-500 dark:text-stone-400">{categoryLabels[product.category] ?? "منتجات أخرى"}</td>
                   <td className="px-6 py-5 font-bold text-[#141414] dark:text-stone-100">
                     {new Intl.NumberFormat("ar-DZ").format(product.price)} <span className="text-xs font-medium text-stone-500 dark:text-stone-400">دج</span>
                   </td>

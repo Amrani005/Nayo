@@ -18,37 +18,60 @@ interface Product {
 
 export default  function ProductsCard({ products }: { products: Product[] }) {
 
-  const [selectedCategory, setSelectedCategory] = useState<string>("الكل");
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get("category");
+  const [categorySelection, setCategorySelection] = useState<{
+    category: string;
+    param: string | null;
+  } | null>(null);
 
+  const hasAbayas = products.some((product) =>
+    ["abayas", "عبايات"].includes(product.category.trim().toLowerCase())
+  );
+  const hasOtherProducts = products.some(
+    (product) => !["abayas", "عبايات"].includes(product.category.trim().toLowerCase())
+  );
   const categories = [
     "الكل",
-    ...Array.from(new Set(products?.map((p) => p.category).filter(Boolean))),
+    ...(hasAbayas ? ["عبايات"] : []),
+    ...(hasOtherProducts ? ["منتجات أخرى"] : []),
   ];
 
+  const normalizedCategoryParam = categoryParam?.trim().toLowerCase();
+  const querySelectedCategory = normalizedCategoryParam
+    ? ["abayas", "عبايات"].includes(normalizedCategoryParam)
+      ? "عبايات"
+      : normalizedCategoryParam === "منتجات أخرى" ||
+          products.some(
+            (product) =>
+              product.category.trim().toLowerCase() === normalizedCategoryParam
+          )
+        ? "منتجات أخرى"
+        : "الكل"
+    : "الكل";
+  const selectedCategory =
+    categorySelection?.param === categoryParam
+      ? categorySelection.category
+      : querySelectedCategory;
+
   useEffect(() => {
-  const match = categoryParam
-    ? products.find(
-        (product) =>
-          product.category.toLowerCase() === categoryParam.toLowerCase()
-      )?.category
-    : undefined;
-
-  setSelectedCategory(match ?? "الكل");
-
-  if (categoryParam) {
-    document.getElementById("products")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }
-}, [categoryParam, products]);
+    if (categoryParam) {
+      document.getElementById("products")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [categoryParam]);
 
   const filteredProducts =
     selectedCategory === "الكل"
       ? products
-      : products.filter((product) => product.category === selectedCategory);
+      : products.filter((product) => {
+          const isAbayas = ["abayas", "عبايات"].includes(
+            product.category.trim().toLowerCase()
+          );
+          return selectedCategory === "عبايات" ? isAbayas : !isAbayas;
+        });
 
   if (!products || products.length === 0) {
     return (
@@ -87,7 +110,9 @@ export default  function ProductsCard({ products }: { products: Product[] }) {
                   <button
                     key={cat}
                     type="button"
-                    onClick={() => setSelectedCategory(cat)}
+                    onClick={() =>
+                      setCategorySelection({ category: cat, param: categoryParam })
+                    }
                     className={`rounded-full px-5 py-2 text-xs sm:text-sm transition-all duration-200 ${
                       isActive
                         ? "bg-[#141414] dark:bg-neutral-800 text-white font-semibold shadow-sm"
@@ -136,7 +161,9 @@ export default  function ProductsCard({ products }: { products: Product[] }) {
 
                   {product.category && (
                     <span className="absolute top-3.5 right-3.5 rounded-full bg-white/90 dark:bg-stone-800/90 px-3.5 py-1 text-[11px] font-semibold text-[#141414] dark:text-stone-100 backdrop-blur-md shadow-sm border border-white/50 dark:border-stone-600/50">
-                      {product.category}
+                      {["abayas", "عبايات"].includes(product.category.trim().toLowerCase())
+                        ? "عبايات"
+                        : "منتجات أخرى"}
                     </span>
                   )}
 

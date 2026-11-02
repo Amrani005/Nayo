@@ -21,9 +21,8 @@ type ProductFormValue = {
 const sizes = ["S", "M", "L", "XL", "XXL"];
 const categories = [
   { value: "Abayas", label: "عبايات" },
-  { value: "Gandouras", label: "قنادر" },
   { value: "Accessories", label: "إكسسوارات" },
-  { value: "Uncategorized", label: "غير مصنف" },
+  { value: "OtherProducts", label: "منتجات أخرى" },
 ];
 
 function readSizes(value?: string) {
@@ -134,7 +133,7 @@ export default function AdminProductForm({ product }: { product?: ProductFormVal
                 <option key={category.value} value={category.value}>{category.label}</option>
               ))}
               {product?.category && !categories.some(({ value }) => value === product.category) && (
-                <option value={product.category}>{product.category}</option>
+                <option hidden value={product.category}>{product.category}</option>
               )}
             </select>
           </label>
